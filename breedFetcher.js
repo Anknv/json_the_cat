@@ -1,8 +1,6 @@
 const request = require('request');
 
-const breed = process.argv[2];
-
-const findBreed = function(breedName, functionToRunWhenThingsAreDone) {
+const fetchBreedDescription = function(breedName, functionToRunWhenThingsAreDone) {
   const url = `https://api.thecatapi.com/v1/breeds/search?q=${breedName}`;
   request(url, (error, response, body) => {
     if (!error) {
@@ -10,19 +8,16 @@ const findBreed = function(breedName, functionToRunWhenThingsAreDone) {
       // console.log(data);
       // console.log(typeof data);
       const breed = data[0];
-      functionToRunWhenThingsAreDone(breed);
+      if (typeof breed === 'undefined') {
+        functionToRunWhenThingsAreDone('Breed not found.', null);
+      } else {
+        functionToRunWhenThingsAreDone(null, breed.description);
+      }
     } else {
-      console.log(error);
+      functionToRunWhenThingsAreDone(error, null);
     }
   });
 };
 
-const printBreed = (breedFromResponse) => {
-  if (typeof breedFromResponse === 'undefined') {
-    console.log('Breed not found.');
-  } else {
-    console.log(breedFromResponse.description);
-  }
-};
-
-findBreed(breed, printBreed);
+module.exports = { fetchBreedDescription };
+//fetchBreedDescription(breed, printBreed);
